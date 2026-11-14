@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>INVERSIONES ADRIANN M&M | Finanzas</title>
+<style>
+:root{--navy:#10243a;--gold:#d7ad50;--bg:#f4f6fa;--ink:#172334;--muted:#66758a;--white:#fff}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#10243a,#1c3c5b);color:#fff;padding:22px 18px}
+header h1{margin:0;font-size:22px;letter-spacing:.3px}header p{margin:7px 0 0;color:#dce5ef;font-size:13px}
+main{max-width:1100px;margin:auto;padding:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px;margin-bottom:16px}
+.card,.panel{background:#fff;border-radius:14px;padding:16px;box-shadow:0 3px 14px #1723340d}
+.card small{color:var(--muted)}.amount{font-size:23px;font-weight:700;margin-top:8px}
+.gold{color:#9b741e}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+button{border:0;border-radius:9px;padding:11px 14px;background:var(--navy);color:#fff;font-weight:600;cursor:pointer}
+button.secondary{background:#e8edf3;color:var(--navy)}button.danger{background:#a83232}
+.tab.active{background:var(--gold);color:#1b2634}
+.panel h2{margin-top:0;font-size:18px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+input,select,textarea{width:100%;padding:11px;border:1px solid #d8e0e9;border-radius:8px;font:inherit;background:#fff}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:600px}th,td{text-align:left;padding:10px;border-bottom:1px solid #e8edf2;font-size:13px}th{color:var(--muted);background:#f8fafc}
+.hidden{display:none}.hint{font-size:12px;color:var(--muted);line-height:1.5}.empty{color:var(--muted);padding:20px;text-align:center}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+@media(max-width:500px){header h1{font-size:18px}.amount{font-size:20px}main{padding:10px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>INVERSIONES ADRIANN M&amp;M</h1>
+  <p>Sistema personal de finanzas · Cobros, abonos, saldos y gastos</p>
+</header>
+<main>
+<section class="cards">
+ <div class="card"><small>Total de cobros</small><div class="amount" id="totalCobros">$0</div></div>
+ <div class="card"><small>Total recibido</small><div class="amount" id="totalAbonos">$0</div></div>
+ <div class="card"><small>Saldo pendiente</small><div class="amount gold" id="totalSaldo">$0</div></div>
+ <div class="card"><small>Gastos registrados</small><div class="amount" id="totalGastos">$0</div></div>
+</section>
+<div class="tabs">
+ <button class="tab active" data-tab="cobros">Cobros</button>
+ <button class="tab secondary" data-tab="abonos">Registrar abono</button>
+ <button class="tab secondary" data-tab="gastos">Gastos</button>
+ <button class="tab secondary" data-tab="resumen">Resumen</button>
+</div>
+<section class="panel" id="cobros">
+<h2>Nuevo cobro</h2>
+<form id="formCobro">
+ <div><label>Nombre del cobro / concepto</label><input required id="concepto" placeholder="Ej. Cobro semanal"></div>
+ <div><label>Cliente o referencia (opcional)</label><input id="cliente" placeholder="Nombre"></div>
+ <div><label>Valor del cobro ($ COP)</label><input required id="valor" type="number" min="1" step="1" placeholder="0"></div>
+ <div><label>Fecha</label><input id="fechaCobro" type="date" required></div>
+ <div><label>Notas (opcional)</label><input id="notaCobro" placeholder="Observaciones"></div>
+ <div style="align-self:end"><button type="submit">Guardar cobro</button></div>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cobro</th><th>Cliente</th><th>Valor</th><th>Abonado</th><th>Saldo</th><th>Acción</th></tr></thead><tbody id="listaCobros"></tbody></table></div>
+</section>
+<section class="panel hidden" id="abonos">
+<h2>Registrar abono</h2>
+<form id="formAbono">
+ <div><label>Seleccionar cobro</label><select id="cobroAbono" required></select></div>
+ <div><label>Valor del abono ($ COP)</label><input id="valorAbono" type="number" min="1" step="1" required></div>
+ <div><label>Fecha del abono</label><input id="fechaAbono" type="date" required></div>
+ <div><label>Nota (opcional)</label><input id="notaAbono" placeholder="Forma de pago / detalle"></div>
+ <div style="align-self:end"><button type="submit">Guardar abono</button></div>
+</form>
+<h2>Historial de abonos</h2>
+<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Cobro</th><th>Valor abonado</th><th>Nota</th><th>Acción</th></tr></thead><tbody id="listaAbonos"></tbody></table></div>
+</section>
+<section class="panel hidden" id="gastos">
+<h2>Registrar gasto</h2>
+<form id="formGasto">
+ <div><label>Concepto del gasto</label><input id="conceptoGasto" required placeholder="Ej. Transporte"></div>
+ <div><label>Valor ($ COP)</label><input id="valorGasto" type="number" min="1" required></div>
+ <div><label>Fecha</label><input id="fechaGasto" type="date" required></div>
+ <div><label>Nota (opcional)</label><input id="notaGasto" placeholder="Detalle"></div>
+ <div style="align-self:end"><button type="submit">Guardar gasto</button></div>
+</form>
+<div class="table-wrap"><table><thead><tr><th>Fecha</th><th>Concepto</th><th>Valor</th><th>Nota</th><th>Acción</th></tr></thead><tbody id="listaGastos"></tbody></table></div>
+</section>
+<section class="panel hidden" id="resumen">
+<h2>Resumen financiero</h2>
+<div id="resumenTexto"></div>
+<p class="hint">El saldo pendiente se calcula automáticamente: valor del cobro menos todos sus abonos.</p>
+<button class="secondary" id="exportar">Exportar respaldo (JSON)</button>
+<button class="secondary" id="exportarCSV">Exportar cobros (CSV)</button>
+<button class="danger" id="borrarTodo">Borrar todos los datos</button>
+</section>
+<p class="hint">🔒 Versión inicial local: los datos se guardan en este navegador y dispositivo. Para que se compartan automáticamente entre celular y computador, hace falta alojar el sistema y conectar una base de datos segura.</p>
+</main>
+<footer>INVERSIONES ADRIANN M&amp;M · Finanzas personales</footer>
+<script>
+const key='adriann_finanzas_v1';
+let db=JSON.parse(localStorage.getItem(key)||'{"cobros":[],"abonos":[],"gastos":[]}');
+const $=id=>document.getElementById(id);
+const money=n=>new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0}).format(n||0);
+const today=new Date().toISOString().slice(0,10);
+['fechaCobro','fechaAbono','fechaGasto'].forEach(id=>$(id).value=today);
+function save(){localStorage.setItem(key,JSON.stringify(db));render()}
+function paid(c){return db.abonos.filter(a=>a.cobroId===c.id).reduce((s,a)=>s+a.valor,0)}
+function balance(c){return c.valor-paid(c)}
+function render(){
+ $('totalCobros').textContent=money(db.cobros.reduce((s,c)=>s+c.valor,0));
+ $('totalAbonos').textContent=money(db.abonos.reduce((s,a)=>s+a.valor,0));
+ $('totalSaldo').textContent=money(db.cobros.reduce((s,c)=>s+balance(c),0));
+ $('totalGastos').textContent=money(db.gastos.reduce((s,g)=>s+g.valor,0));
+ $('listaCobros').innerHTML=db.cobros.map(c=>`<tr><td>${c.fecha}</td><td>${esc(c.concepto)}</td><td>${esc(c.cliente||'—')}</td><td>${money(c.valor)}</td><td>${money(paid(c))}</td><td><b>${money(balance(c))}</b></td><td><button class="danger" onclick="del('cobros','${c.id}')">Eliminar</button></td></tr>`).join('')||'<tr><td colspan="7" class="empty">Todavía no hay cobros registrados.</td></tr>';
+ $('cobroAbono').innerHTML=db.cobros.filter(c=>balance(c)>0).map(c=>`<option value="${c.id}">${esc(c.concepto)} · saldo ${money(balance(c))}</option>`).join('')||'<option value="">No hay cobros pendientes</option>';
+ $('listaAbonos').innerHTML=db.abonos.map(a=>{let c=db.cobros.find(x=>x.id===a.cobroId);return `<tr><td>${a.fecha}</td><td>${esc(c?.concepto||'Cobro eliminado')}</td><td>${money(a.valor)}</td><td>${esc(a.nota||'—')}</td><td><button class="danger" onclick="del('abonos','${a.id}')">Eliminar</button></td></tr>`}).join('')||'<tr><td colspan="5" class="empty">Todavía no hay abonos.</td></tr>';
+ $('listaGastos').innerHTML=db.gastos.map(g=>`<tr><td>${g.fecha}</td><td>${esc(g.concepto)}</td><td>${money(g.valor)}</td><td>${esc(g.nota||'—')}</td><td><button class="danger" onclick="del('gastos','${g.id}')">Eliminar</button></td></tr>`).join('')||'<tr><td colspan="5" class="empty">Todavía no hay gastos.</td></tr>';
+ $('resumenTexto').innerHTML=`<p><b>Valor total de cobros:</b> ${money(db.cobros.reduce((s,c)=>s+c.valor,0))}</p><p><b>Total recibido:</b> ${money(db.abonos.reduce((s,a)=>s+a.valor,0))}</p><p><b>Saldo por cobrar:</b> ${money(db.cobros.reduce((s,c)=>s+balance(c),0))}</p><p><b>Total de gastos:</b> ${money(db.gastos.reduce((s,g)=>s+g.valor,0))}</p><p><b>Recibido menos gastos:</b> ${money(db.abonos.reduce((s,a)=>s+a.valor,0)-db.gastos.reduce((s,g)=>s+g.valor,0))}</p>`;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function del(type,id){if(confirm('¿Seguro que deseas eliminar este registro?')){db[type]=db[type].filter(x=>x.id!==id);save()}}
+window.del=del;
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>{x.classList.remove('active');x.classList.add('secondary')});b.classList.add('active');b.classList.remove('secondary');document.querySelectorAll('main>section.panel').forEach(s=>s.classList.add('hidden'));$(b.dataset.tab).classList.remove('hidden')}));
+$('formCobro').onsubmit=e=>{e.preventDefault();db.cobros.unshift({id:crypto.randomUUID(),concepto:$('concepto').value,cliente:$('cliente').value,valor:Number($('valor').value),fecha:$('fechaCobro').value,nota:$('notaCobro').value});e.target.reset();$('fechaCobro').value=today;save()};
+$('formAbono').onsubmit=e=>{e.preventDefault();let c=db.cobros.find(c=>c.id===$('cobroAbono').value),v=Number($('valorAbono').value);if(!c)return alert('Selecciona un cobro.');if(v>balance(c))return alert('El abono no puede ser mayor que el saldo pendiente ('+money(balance(c))+').');db.abonos.unshift({id:crypto.randomUUID(),cobroId:c.id,valor:v,fecha:$('fechaAbono').value,nota:$('notaAbono').value});e.target.reset();$('fechaAbono').value=today;save()};
+$('formGasto').onsubmit=e=>{e.preventDefault();db.gastos.unshift({id:crypto.randomUUID(),concepto:$('conceptoGasto').value,valor:Number($('valorGasto').value),fecha:$('fechaGasto').value,nota:$('notaGasto').value});e.target.reset();$('fechaGasto').value=today;save()};
+$('exportar').onclick=()=>download('finanzas-adriann-respaldo.json',JSON.stringify(db,null,2),'application/json');
+$('exportarCSV').onclick=()=>{let rows=[['Fecha','Cobro','Cliente','Valor','Abonado','Saldo'],...db.cobros.map(c=>[c.fecha,c.concepto,c.cliente,c.valor,paid(c),balance(c)])];download('cobros.csv',rows.map(r=>r.map(x=>'"'+String(x??'').replace(/"/g,'""')+'"').join(';')).join('\n'),'text/csv;charset=utf-8')};
+function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();URL.revokeObjectURL(a.href)}
+$('borrarTodo').onclick=()=>{if(confirm('Esto borrará cobros, abonos y gastos de este navegador. ¿Continuar?')){db={cobros:[],abonos:[],gastos:[]};save()}};
+render();
+</script>
+</body>
+</html>
